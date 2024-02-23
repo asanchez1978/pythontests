@@ -1,0 +1,16 @@
+python==3.10
+pytest==7.3.1
+pytest-clarity==1.0.1
+python-dotenv==1.0.0
+pytest-html==3.2
+pytest-instafail==0.4.2
+pytest-lazy-fixture==0.6.3
+pytest-timeout==2.0.2
+pytest-rerunfailures==10.2
+requests==2.31.0
+jsonschema==4.1.0
+black==22.3.0
+isort==5.12.0
+pylint==2.14.5
+pytest-xdist==2.5.0
+pytest-check==1.0.4

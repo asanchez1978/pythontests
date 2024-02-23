@@ -1,0 +1,61 @@
+test-load-messaging:
+    stage: test
+    resource_group: staging-messaging
+    script:
+    - python3.9 -m pip install -r requirements/load.txt
+    - !reference [.assume-role, script]
+    - >
+      locust
+      --config load_tests/locust/messaging/messaging.conf
+      --locustfile load_tests/locust/messaging/get_conversations.py 
+      --html report_locust-messaging.html
+    environment:
+      name: staging-messaging
+    artifacts:
+      when: always
+      paths:
+        - report_locust-messaging.html
+    rules:
+      - if: $TRIGGER_TEST =~ /.*locust-sms.*/
+
+
+test-load-number-mngt:
+    stage: test
+    resource_group: staging-nm-load
+    script:
+    - python3.9 -m pip install -r load_tests/requirements/load.txt
+    - !reference [.assume-role, script]
+    - >
+      locust 
+      --config=load_tests/locust/number_mngt/number_mngt.conf 
+      --locustfile load_tests/locust/number_mngt/list_countries.py 
+      --html report_locust-mngt.html
+    environment:
+      name: staging-number-management
+    artifacts:
+      when: always
+      paths:
+        - report_locust-mngt.html
+    rules:
+      - if: $TRIGGER_TEST =~ /.*locust-number.*/
+
+
+test-load-webhook-api:
+    stage: test
+    resource_group: staging-webhook-api-load
+    script:
+    - python3.9 -m pip install -r load_tests/requirements/load.txt
+    - !reference [.assume-role, script]
+    - >
+      locust 
+      --config=load_tests/locust/webhook_api/webhook_api.conf 
+      --locustfile load_tests/locust/webhook_api/get_webhook.py
+      --html report_load_webhook_api.html
+    environment:
+      name: staging-ecosystem
+    artifacts:
+      when: always
+      paths:
+        - report_load_webhook_api.html
+    rules:
+      - if: $TRIGGER_TEST =~ /.*locust-web-hook.*/
