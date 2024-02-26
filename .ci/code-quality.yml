@@ -17,12 +17,7 @@ pylint:
     - python3.10 -m pip install pylint-gitlab==0.3.0
     - >
       python3.10 -m 
-      pylint $(find back_tests load_tests -type f -name "*py" ) 
-      --output-format=pylint_gitlab.GitlabCodeClimateReporter 
-      --disable=R0801,R0902,R0903,R0904,R0912,R0913,R0914,R0916,R1704,R1710,R1719,R1721,R1732
-      --disable=W0201,W0401,W0511,W0613,W0614,W0621,W0622,W0640,W0703,W1202,W1203,W1514
-      --disable=C0103,C0112,C0114,C0115,C0116,C0201,C0209,C0301,C0302
-      > ${REPORT_NAME}
+      pylint $(find back_tests load_tests -type f -name "*py" )
   artifacts:
     paths: 
      - ${REPORT_NAME}

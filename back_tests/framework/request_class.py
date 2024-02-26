@@ -1,10 +1,12 @@
 import logging
 import os
-
+from dotenv import load_dotenv
 import requests
 import json
 
 logger = logging.getLogger("REST_API_TESTS")
+
+load_dotenv(".env/local.env")
 
 
 class RestClientAPI:
@@ -20,45 +22,46 @@ class RestClientAPI:
         return cls.instance
 
     def __init__(self):
-        self.base_url = os.environ["URL_API"]
-        self.response = None
-        self.errors = None
-        self.response_code = None
+        self.base_url = os.environ["API_BASE_URL"]
+        self.access_token = os.environ["ACCESS_TOKEN"]
 
-    def get(self, endpoint, params=None):
-        url = f"{self.base_url}/{endpoint}"
-        response = requests.get(url, params=params)
+    def get(self, endpoint, user_id=None):
+        url = f"{self.base_url}/{endpoint}{user_id}"
+
+        headers = {"Authorization": f"Bearer {self.access_token}"}
+        response = requests.get(url, headers=headers)
         return response.json()
 
-    def post(self, endpoint, data):
+    def post(self, endpoint, data=None):
         url = f"{self.base_url}/{endpoint}"
-        headers = {"Content-Type": "application/json"}
+        headers = {"Accept": "application/json", "Content-Type": "application/json", "Authorization": f"Bearer {self.access_token}"}
         response = requests.post(url, data=json.dumps(data), headers=headers)
         return response.json()
 
-    def put(self, endpoint, data):
-        url = f"{self.base_url}/{endpoint}"
-        headers = {"Content-Type": "application/json"}
+    def put(self, endpoint, user_id=None, data=None):
+        url = f"{self.base_url}/{endpoint}{user_id}/"
+        headers = {"Accept": "application/json", "Content-Type": "application/json", "Authorization": f"Bearer {self.access_token}"}
         response = requests.put(url, data=json.dumps(data), headers=headers)
         return response.json()
 
-    def post_graphql(self, payload):
-        """
-        Perform a POST request to the internal API
-        """
-        logger.info(f"Data: {json.dumps(payload)}")
-        response = requests.post(
-            url=self.base_url,
-            data=json.dumps(payload),
-            verify=False,
-            headers={"Content-Type": "application/json"},
-        )
-        logger.info(f"URL: {self.base_url}")
-        logger.info(f"{response.status_code} {response.reason}, {response.text}")
+    def patch(self, endpoint, user_id=None, data=None):
+        url = f"{self.base_url}/{endpoint}{user_id}/"
+        headers = {"Accept": "application/json", "Content-Type": "application/json", "Authorization": f"Bearer {self.access_token}"}
+        response = requests.patch(url, data=json.dumps(data), headers=headers)
+        return response.json()
 
-        self.response_code = response.status_code
-        self.response = response.json().get("data", None)
-        self.errors = response.json().get("errors", None)
+    def delete(self, endpoint, user_id=None):
+        url = f"{self.base_url}/{endpoint}{user_id}/"
+        headers = {"Accept": "application/json", "Content-Type": "application/json", "Authorization": f"Bearer {self.access_token}"}
+        response = requests.delete(url, headers=headers)
+        return response.status_code
+
+    def graphql_post(self, endpoint, query, variables=None):
+        url = f"{self.base_url}/graphql/{endpoint}"
+        headers = {"Content-Type": "application/json", "Authorization": f"Bearer {self.access_token}"}
+        data = {"query": query, "variables": variables}
+        response = requests.post(url, data=json.dumps(data), headers=headers)
+        return response.json()
 
 
-backend_request_api = RestClientAPI.get_instance()
+BACKEND_REQUEST_API = RestClientAPI.get_instance()
